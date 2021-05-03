@@ -1,11 +1,15 @@
 package it.polito.tdp.metroparis.model;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import org.jgrapht.Graph;
 import org.jgrapht.Graphs;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.SimpleGraph;
+import org.jgrapht.traverse.DepthFirstIterator;
+import org.jgrapht.traverse.BreadthFirstIterator;
 
 import it.polito.tdp.metroparis.db.MetroDAO;
 
@@ -40,7 +44,54 @@ public class Model {
 			this.grafo.addEdge(c.getStazP(), c.getStazA());
 		}
 		
-		System.out.println(this.grafo);
+		System.out.format("Grafo creato con %d vertici e %d archi\n",
+				this.grafo.vertexSet().size(), this.grafo.edgeSet().size());
+		//System.out.println(this.grafo);
+		
+//		Fermata f;
+//		/*
+//		Set<DefaultEdge> archi = this.grafo.edgesOf(f);
+//		for(DefaultEdge e : archi) {
+//			/*
+//			Fermata f1 = this.grafo.getEdgeSource(e);
+//			// oppure (se il grafo è non orientato avrò solo uno dei due collegamenti: A->B o B->A)
+//			Fermata f2 = this.grafo.getEdgeTarget(e);
+//			if(f1.equals(f)) {
+//				// f2 è quello che mi serve
+//			}
+//			else {
+//				// f2 è quello che mi serve
+//			}
+//			
+//			f1 = Graphs.getOppositeVertex(this.grafo, e, f);
+//		}*/
+//		
+//		// in questo modo riesco ad ottenere la lista dei vertici adiacenti ad f
+//		List<Fermata> fermateAdiacenti = Graphs.successorListOf(this.grafo, f);
+	}
+	
+	public List<Fermata> fermateRaggiungibili(Fermata partenza) {
+		BreadthFirstIterator<Fermata, DefaultEdge> bfv = new BreadthFirstIterator<>(this.grafo, partenza);
+		
+		DepthFirstIterator<Fermata, DefaultEdge> dfv = new DepthFirstIterator<>(this.grafo, partenza);
+		
+		List<Fermata> result = new ArrayList<>();
+		
+		while(bfv.hasNext()) {
+			Fermata f = bfv.next();
+			result.add(f);
+		}
+		
+		return result;
+	}
+	
+	public Fermata trovaFermata(String nome) {
+		for(Fermata f : this.grafo.vertexSet()) {
+			if(f.getNome().equals(nome)) {
+				return f;
+			}
+		}
+		return null;
 	}
 	
 }
